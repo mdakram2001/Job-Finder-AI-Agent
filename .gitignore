@@ -1,6 +1,7 @@
 /resumes
 /Temp
+/venv
+/tools
 .env
 backend.ipynb
 none.txt
-/venv
