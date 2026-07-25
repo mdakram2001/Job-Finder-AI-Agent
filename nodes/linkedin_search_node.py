@@ -1,7 +1,21 @@
-from linkedin_jobs import scrape_jobs, settings
 from schemas.job_schema import JobSchema
 from states.graph_state import State
+# from llms.huggingface import model
+from llms.ollama import model
+from langchain_core.messages import SystemMessage, HumanMessage
 import asyncio
+import sys
+import os
+
+# -----------------------------
+# Path Setting for Additional Imports
+# -----------------------------
+# Add the scraper folder to Python's search path
+sys.path.append(os.path.abspath("tools/linkedin_scraper"))
+
+# Additional Imports
+from linkedin_scraper import scrape_jobs
+from linkedin_scraper.config.settings import settings
 
 
 # -----------------------------
@@ -19,28 +33,29 @@ PROMPT_3 = """
 """
 async def linkedin_job_search_node(state: State) -> dict:
     
-    job_roles = state['jobs_roles']
+    job_roles = state.get('job_roles', [])
     all_jobs = []
 
     settings.search.filters.time_posted = "r86400"
 
-    structured_llm = model.with_structured_output(JobSchema, method='json_schema')
+    structured_llm = model.with_structured_output(JobSchema, method="function_calling")
     
-    for i in jobs:
+
+    for i in job_roles:
 
         jobs = await scrape_jobs(
         keywords = i, 
-        location= state[''], 
+        location= "Remote", 
         max_results=10,
         headless=True, # Set to False if you want to watch the browser
         )
     
-        all_jobs = all_jobs + jobs
+        all_jobs.extend(jobs)
 
         
 
     return {
-        "jobs": [JobSchema.model_validate(
+        "jobs": [(
             structured_llm.invoke([
                 SystemMessage(content=PROMPT_3),
                 HumanMessage(content=f"Here is the data :\n\n{job}")

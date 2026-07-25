@@ -1,5 +1,6 @@
 from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
+from schemas.project_schema import ProjectSchema
 
 class ResumeSchema(BaseModel):
     job_roles: Optional[List[str]] = Field(default=None, description="List of job roles the applicant is interested in or can apply according to the resume", examples=["Data Scientist", "Machine Learning Engineer"])

@@ -1,4 +1,9 @@
 from states.graph_state import State
+# from llms.huggingface import model
+from llms.ollama import model
+from langchain_core.messages import SystemMessage, HumanMessage
+import json
+import re
 
 # -----------------------------
 # ii) Node 2:
@@ -19,6 +24,7 @@ def find_job_roles(state: State) -> dict:
     # ----------------------------- Getting the Resume Details from the State ------------------------------
 
     resume = state['resume']
+    state['job_roles'] = []
 
     # ---------------------------------- Getting job roles from the model ----------------------------------
 
@@ -28,7 +34,17 @@ def find_job_roles(state: State) -> dict:
         HumanMessage(content=f"Here is the Details :\n\n{resume}")
         
     ])
-    all_roles = state['job_roles'].append(parsed_roles)
 
-    return {"jobs_roles" : all_roles}
+    content = parsed_roles.content
+    try:
+        # Extract the JSON list from the string response
+        match = re.search(r'\[.*\]', content, re.DOTALL)
+        if match:
+            roles_list = json.loads(match.group(0))
+        else:
+            roles_list = [content.strip()]
+    except Exception:
+        roles_list = [content.strip()]
+
+    return {"job_roles" : roles_list}
 
