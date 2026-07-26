@@ -3,6 +3,7 @@ from states.graph_state import State
 # from llms.huggingface import model
 from llms.ollama import model
 from langchain_core.messages import SystemMessage, HumanMessage
+from prompts.prompt import JOB_SCHEMA_FILLING_PROMPT
 import asyncio
 import sys
 import os
@@ -21,16 +22,7 @@ from linkedin_scraper.config.settings import settings
 # -----------------------------
 # iii) Node 3:
 # -----------------------------
-PROMPT_3 = """
-    You are given either a Python dictionary or JSON object containing job-related information. Your task is to analyze the provided data and populate the JobSchema accordingly.
 
-    1. Map the available fields from the input data to the corresponding fields in JobSchema.
-    2. If a field is already correctly populated, leave it unchanged.
-    3. If a field is missing, empty, or incorrectly populated, infer and fill it using the information available in the input data.
-    4. Use contextual understanding to extract or generate values for fields such as job_description, job_title, skills, location, and any other relevant schema fields whenever possible.
-    5. Do not overwrite valid existing values with inferred ones.
-    6. Return the completed JobSchema with all fields populated as accurately as possible based on the provided data. 
-"""
 async def linkedin_job_search_node(state: State) -> dict:
     
     job_roles = state.get('job_roles', [])
@@ -57,7 +49,7 @@ async def linkedin_job_search_node(state: State) -> dict:
     return {
         "jobs": [(
             structured_llm.invoke([
-                SystemMessage(content=PROMPT_3),
+                SystemMessage(content=JOB_SCHEMA_FILLING_PROMPT),
                 HumanMessage(content=f"Here is the data :\n\n{job}")
             ])
             ) for job in all_jobs]
