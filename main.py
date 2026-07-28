@@ -20,7 +20,7 @@ async def main():
     # 3. Print the final results nicely
     print("\n--- ELIGIBILITY RESULTS ---\n")
     for result in final_state.get("eligibility_results", []):
-        print(f"Job: {result.job.job_title} at {result.job.company}")
+        # print(f"Job: {result.job.job_title} at {result.job.company}")
         print(f"Eligible: {result.is_eligible}")
         print(f"Match Percentage: {result.percentage_match}%")
         if not result.is_eligible:
