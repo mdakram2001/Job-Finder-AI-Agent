@@ -37,8 +37,8 @@ async def linkedin_job_search_node(state: State) -> dict:
 
         jobs = await scrape_jobs(
         keywords = i, 
-        location= "Remote", 
-        max_results=2,
+        location= "India", 
+        max_results=10,
         headless=True, # Set to False if you want to watch the browser
         )
     

@@ -17,6 +17,6 @@ def check_eligibility(state: State):
             SystemMessage(content=JOB_ELIGIBILITY_EVALUATION_PROMPT),
             HumanMessage(content=f"Here is the resume :\n\n{state['resume']} \n\n Here is the job :\n\n{i}")
         ])
-        final_results.append(eligibility_result)
+        final_results.append((i, eligibility_result))
 
     return {"eligibility_results": final_results}

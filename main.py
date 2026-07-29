@@ -13,19 +13,26 @@ initial_state = {
 # 2. Run the compiled graph. 
 # We use await app.ainvoke() because your scraper node is async
 import asyncio
-
+import json
 async def main():
     final_state = await app.ainvoke(initial_state)
 
     # 3. Print the final results nicely
     print("\n--- ELIGIBILITY RESULTS ---\n")
     for result in final_state.get("eligibility_results", []):
-        # print(f"Job: {result.job.job_title} at {result.job.company}")
-        print(f"Eligible: {result.is_eligible}")
-        print(f"Match Percentage: {result.percentage_match}%")
-        if not result.is_eligible:
-            print(f"Reason: {result.reason}")
-        print("-" * 30)
+
+        job: JobSchema = result[0]
+        eligibility: EligibilitySchema = result[1]
+
+        record = {
+            "job": job.model_dump(),
+            "eligibility": eligibility.model_dump(),
+        }
+        with open("jobs.json", "a", encoding="utf-8") as f:
+            f.write(json.dumps(record, indent=2))
+            f.write("\n")
+            print("================== Job Saved =====================")
+        
 
 if __name__ == "__main__":
     asyncio.run(main())
