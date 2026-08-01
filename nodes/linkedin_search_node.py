@@ -29,6 +29,7 @@ async def linkedin_job_search_node(state: State) -> dict:
     all_jobs = []
 
     settings.search.filters.time_posted = "r86400"
+    # settings.search.filters.job_type = ["I"]
 
     structured_llm = model.with_structured_output(JobSchema, method="function_calling")
     
@@ -38,7 +39,7 @@ async def linkedin_job_search_node(state: State) -> dict:
         jobs = await scrape_jobs(
         keywords = i, 
         location= "India", 
-        max_results=10,
+        max_results=1,
         headless=True, # Set to False if you want to watch the browser
         )
     

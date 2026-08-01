@@ -1,6 +1,11 @@
 import os
+import json
+import asyncio
 from dotenv import load_dotenv
 from graph.graph import app
+from schemas.job_schema import JobSchema
+from schemas.eligibility_schema import EligibilitySchema
+from utilities.save_jobs import save_jobs
 
 # Load environment variables from .env file
 load_dotenv()
@@ -12,9 +17,9 @@ initial_state = {
 
 # 2. Run the compiled graph. 
 # We use await app.ainvoke() because your scraper node is async
-import asyncio
-import json
+
 async def main():
+
     final_state = await app.ainvoke(initial_state)
 
     # 3. Print the final results nicely
@@ -28,11 +33,8 @@ async def main():
             "job": job.model_dump(),
             "eligibility": eligibility.model_dump(),
         }
-        with open("jobs.json", "a", encoding="utf-8") as f:
-            f.write(json.dumps(record, indent=2))
-            f.write("\n")
-            print("================== Job Saved =====================")
-        
+
+        save_jobs(record)
 
 if __name__ == "__main__":
     asyncio.run(main())
